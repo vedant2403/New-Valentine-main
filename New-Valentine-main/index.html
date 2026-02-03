@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Will You Be My Valentine?</title>
+
+  <!-- Google Fonts: romantic cursive for headings + clean body font -->
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* -------------------------
+       Theme color variables
+       ------------------------- */
+    :root{
+      --blush: #F6D1D6;      /* background blush */
+      --deep-red: #C21807;   /* accent deep red */
+      --cream: #FFF5EA;      /* sections background */
+      --soft-gold: #D4AF37;  /* subtle gold */
+      --text: #3b2b2b;       /* dark brownish for text */
+      --muted: #8b6f6f;
+      --glass: rgba(255,255,255,0.6);
+      --max-width: 1000px;
+    }
+
+    /* -------------------------
+       Global styles & reset
+       ------------------------- */
+    *{box-sizing: border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, var(--blush) 0%, #FFF8F9 50%, var(--cream) 100%);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.5;
+    }
+
+    a{color:inherit}
+
+    .container{
+      max-width:var(--max-width);
+      margin:0 auto;
+      padding:2rem;
+    }
+
+    /* -------------------------
+       Floating hearts & sparkles canvas overlay
+       ------------------------- */
+    #hero{
+      position:relative;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      padding:2rem 1rem;
+      text-align:center;
+    }
+
+    /* Decorative overlay for subtle vignette */
+    #hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: radial-gradient(ellipse at center, rgba(255,255,255,0.0) 0%, rgba(0,0,0,0.03) 100%);
+      pointer-events:none;
+    }
+
+    /* Main hero card */
+    .hero-card{
+      position:relative;
+      z-index:10;
+      background: linear-gradient(135deg, rgba(255,255,255,0.75), rgba(255,250,247,0.65));
+      border-radius:20px;
+      padding:3rem 2rem;
+      box-shadow: 0 8px 30px rgba(194, 70, 70, 0.08);
+      backdrop-filter: blur(6px);
+      max-width:900px; 
+      width:100%;
+    }
+
+    h1{
+      font-family: "Great Vibes", cursive;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      margin:0 0 0.25rem 0;
+      color:var(--deep-red);
+      letter-spacing:0.5px;
+    }
+
+    p.lead{
+      font-size:clamp(1rem, 2.2vw, 1.25rem);
+      color:var(--muted);
+      margin:0 0 1rem 0;
+    }
+
+    /* small instruction */
+    .hero-sub{
+      margin-top:1rem;
+      color: #7a575a;
+      font-size:0.95rem;
+    }
+
+    /* -------------------------
+       Audio controls (top-right)
+       ------------------------- */
+    .audio-controls{
+      position:fixed;
+      top:16px;
+      right:16px;
+      z-index:50;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      background: rgba(255,255,255,0.7);
+      padding:8px;
+      border-radius:999px;
+      box-shadow:0 4px 14px rgba(0,0,0,0.08);
+      backdrop-filter: blur(6px);
+    }
+
+    .audio-controls button{
+      border:0;
+      background:transparent;
+      font-size:1rem;
+      cursor:pointer;
+      color:var(--deep-red);
+      padding:6px 8px;
+      border-radius:8px;
+      transition:transform 180ms ease, background 180ms;
+    }
+    .audio-controls button:hover{ transform:translateY(-3px); background: rgba(194,70,70,0.06) }
+
+    /* -------------------------
+       Sections styling
+       ------------------------- */
+    section{
+      padding:4rem 0;
+      position:relative;
+    }
+    .section-head{
+      text-align:center;
+      margin-bottom:2rem;
+    }
+    .section-head h2{
+      font-family:"Great Vibes", cursive;
+      font-size:2.4rem;
+      color:var(--deep-red);
+      margin:0;
+    }
+    .section-sub{
+      color:var(--muted);
+      margin-top:0.4rem;
+    }
+
+    /* Our Story timeline / cards */
+    .timeline{
+      display:flex;
+      gap:1rem;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    .story-card{
+      background:linear-gradient(180deg, #fff 0%, #fff8 100%);
+      border-radius:14px;
+      padding:1rem;
+      width:260px;
+      box-shadow:0 6px 20px rgba(196,90,90,0.06);
+      border:1px solid rgba(194,70,70,0.05);
+      transition:transform 220ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms;
+    }
+    .story-card:hover{ transform:translateY(-6px); box-shadow:0 16px 40px rgba(196,90,90,0.08) }
+    .story-card time{
+      display:block;
+      font-weight:600;
+      color:var(--deep-red);
+      font-size:0.95rem;
+    }
+    .story-card p{ margin:8px 0 0 0; color:var(--muted); font-size:0.95rem; }
+
+    /* Photo Gallery grid */
+    .gallery-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap:12px;
+      align-items:center;
+    }
+    .gallery-item{
+      border-radius:12px;
+      overflow:hidden;
+      cursor:pointer;
+      position:relative;
+      transition:transform 240ms ease, box-shadow 240ms;
+    }
+    .gallery-item img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transition:transform 400ms ease;
+    }
+    .gallery-item:hover{ transform:scale(1.03); box-shadow:0 10px 30px rgba(0,0,0,0.1); }
+    .gallery-item:hover img{ transform:scale(1.06); }
+
+    /* Modal / lightbox */
+    .modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background: linear-gradient(180deg, rgba(0,0,0,0.5), rgba(0,0,0,0.65));
+      z-index:60;
+    }
+    .modal.open{ display:flex; }
+    .modal-content{
+      max-width:900px;
+      width:94%;
+      background:transparent;
+      border-radius:12px;
+      position:relative;
+      padding:1rem;
+    }
+    .modal-img{
+      width:100%;
+      border-radius:10px;
+      box-shadow:0 20px 60px rgba(0,0,0,0.6);
+      animation:fadeIn 420ms ease;
+    }
+
+    @keyframes fadeIn{ from {opacity:0; transform:scale(0.98)} to {opacity:1; transform:scale(1)} }
+
+    /* Love letter: handwriting look */
+    .love-letter{
+      background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,250,247,0.95));
+      border-radius:14px;
+      padding:2rem;
+      font-family:"Georgia", "Times New Roman", serif;
+      color: #5d3b3b;
+      box-shadow:0 8px 30px rgba(0,0,0,0.04);
+      line-height:1.9;
+      font-size:1.05rem;
+    }
+    .love-letter .from{
+      margin-top:1.2rem;
+      text-align:right;
+      font-weight:600;
+      color:var(--deep-red);
+    }
+
+    /* The big question section */
+    .question{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap:1rem;
+    }
+    .question h2{
+      font-family:"Great Vibes", cursive;
+      font-size:clamp(2.6rem, 6vw, 5.2rem);
+      margin:0;
+      color:var(--deep-red);
+      text-shadow: 0 6px 20px rgba(194,70,70,0.06);
+    }
+    .btn-row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    .btn{
+      background:linear-gradient(180deg,var(--deep-red), #a11607);
+      color:white;
+      padding:12px 20px;
+      border-radius:999px;
+      border:0;
+      font-size:1.05rem;
+      cursor:pointer;
+      box-shadow:0 8px 30px rgba(194,70,70,0.12);
+      transition:transform 160ms ease, box-shadow 160ms ease, filter 160ms;
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+    }
+    .btn.secondary{
+      background: linear-gradient(180deg,#fff, #fff8);
+      color:var(--deep-red);
+      border: 2px solid rgba(194,70,70,0.12);
+      box-shadow: none;
+    }
+    .btn:hover{ transform:translateY(-6px) rotate(-0.5deg) scale(1.02); filter:brightness(1.03) }
+
+    /* Celebration overlay */
+    .celebrate{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:80;
+      background: radial-gradient(ellipse at center, rgba(255,255,255,0.10), rgba(0,0,0,0.5));
+    }
+    .celebrate.open{ display:flex; }
+    .celebrate-card{
+      text-align:center;
+      backdrop-filter: blur(4px);
+      background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,248,247,0.75));
+      padding:2rem 2.5rem;
+      border-radius:14px;
+      box-shadow:0 30px 80px rgba(0,0,0,0.4);
+    }
+    .celebrate-card h3{ font-family:"Great Vibes", cursive; color:var(--deep-red); font-size:2.8rem; margin:0; }
+    .celebrate-card p{ color:var(--muted); margin-top:0.6rem }
+
+    /* Footer */
+    footer{
+      text-align:center;
+      padding:2rem 1rem;
+      color:var(--muted);
+      font-size:0.95rem;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width:720px){
+      .hero-card{ padding:2rem 1.2rem; border-radius:16px }
+      .story-card{ width:100%; }
+      .section-head h2{ font-size:2rem }
+    }
+
+    /* Small decorative floating hearts created with pseudo elements (JS duplicates for more) */
+    .floating-heart{
+      position:absolute;
+      width:28px;
+      height:28px;
+      pointer-events:none;
+      transform-origin:center;
+      z-index:5;
+      opacity:0.95;
+    }
+
+    /* Heart shape using SVG path (applied to inserted elements) */
+    /* -------------------------
+       Canvas styles for confetti
+       ------------------------- */
+    canvas#confetti{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:85;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- -------------------------
+       Background audio + controls
+       - We include a gentle instrumental loop (royalty-free sample).
+       - Browsers may block autoplay; provide play/pause + mute toggles.
+       ------------------------- -->
+  <div class="audio-controls" aria-hidden="false">
+    <button id="playBtn" title="Play music" aria-pressed="false">▶︎ Play</button>
+    <button id="muteBtn" title="Mute music" aria-pressed="false">🔈 Mute</button>
+    <label style="font-size:0.85rem; color:#7a575a; margin-left:6px;">Valentine's music</label>
+  </div>
+
+  <!-- Hidden audio element -->
+  <audio id="bgMusic" loop preload="auto">
+    <!-- Example royalty-free loop hosted publicly. Replace with your own file if desired. -->
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_9d0c02b9b1.mp3?filename=soft-piano-112354.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <!-- Canvas for confetti/particles -->
+  <canvas id="confetti" width="800" height="600" aria-hidden="true"></canvas>
+
+  <!-- -------------------------
+       Hero Section
+       - Full-screen intro with animated hearts and soft headline.
+       ------------------------- -->
+  <header id="hero" role="banner" aria-label="Romantic hero">
+    <div class="hero-card container" role="region" aria-labelledby="hero-title">
+      <h1 id="hero-title">From the moment I met you…</h1>
+      <p class="lead">You turned ordinary days into a lifetime of sweet moments. Today I have something special to ask.</p>
+
+      <!-- Optional countdown to the next Valentine's Day -->
+      <div id="countdown" aria-live="polite" style="margin-top:10px; color:var(--muted)"></div>
+
+      <div class="hero-sub">Scroll to read our story, see photos, and—when you're ready—answer me.</div>
+
+      <!-- Subtle prompt -->
+      <div style="margin-top:1.2rem; font-size:0.9rem; color:var(--muted)">Tap or click the buttons below when your heart is ready.</div>
+    </div>
+
+    <!-- Decorative floating hearts (initial set). More will be created by JS -->
+    <!-- We'll add a few hearts using inline SVG for crispness -->
+    <svg class="floating-heart" style="left:8%; top:20%; transform:translate(-50%,-50%)" viewBox="0 0 24 24" width="34" height="34" aria-hidden="true">
+      <path fill="#ff6b8a" d="M12 21s-7.5-4.873-10-8.086C-0.646 8.873 3.22 3 8 5.5 10.666 6.978 12 9 12 9s1.333-2.022 4-3.5c4.78-2.5 8.646 3.373 6 7.414C19.5 16.127 12 21 12 21z"/>
+    </svg>
+
+    <svg class="floating-heart" style="left:86%; top:15%; transform:translate(-50%,-50%)" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+      <path fill="#ffc2c7" d="M12 21s-7.5-4.873-10-8.086C-0.646 8.873 3.22 3 8 5.5 10.666 6.978 12 9 12 9s1.333-2.022 4-3.5c4.78-2.5 8.646 3.373 6 7.414C19.5 16.127 12 21 12 21z"/>
+    </svg>
+
+    <svg class="floating-heart" style="left:50%; top:6%; transform:translate(-50%,-50%)" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true">
+      <path fill="#ffd2c2" d="M12 21s-7.5-4.873-10-8.086C-0.646 8.873 3.22 3 8 5.5 10.666 6.978 12 9 12 9s1.333-2.022 4-3.5c4.78-2.5 8.646 3.373 6 7.414C19.5 16.127 12 21 12 21z"/>
+    </svg>
+  </header>
+
+  <!-- -------------------------
+       Our Story Section
+       - Timeline cards highlighting special moments.
+       ------------------------- -->
+  <main>
+    <section id="our-story" aria-labelledby="our-story-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="our-story-title">Our Story</h2>
+          <div class="section-sub">A few favorite moments that built us</div>
+        </div>
+
+        <div class="timeline" role="list">
+          <!-- Each story-card is a milestone; change text/images to personalize -->
+          <article class="story-card" role="listitem" aria-label="First meeting">
+            <time>First meeting</time>
+            <p>The way you smiled the first time I saw you — I knew something beautiful was beginning.</p>
+          </article>
+
+          <article class="story-card" role="listitem" aria-label="Favorite trip">
+            <time>Favorite trip</time>
+            <p>That spontaneous weekend away — laughter, late-night talks, and the best coffee we shared.</p>
+          </article>
+
+          <article class="story-card" role="listitem" aria-label="Inside joke">
+            <time>Inside joke</time>
+            <p>Our silly inside jokes that still make us giggle at the most unexpected times.</p>
+          </article>
+
+          <article class="story-card" role="listitem" aria-label="Everyday moments">
+            <time>Everyday moments</time>
+            <p>Cooking together, dancing in the kitchen, and turning ordinary days into our favorites.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- -------------------------
+         Photo Gallery
+         - Grid of photos that open in a modal slideshow.
+         - Replace the src attributes with your personal photos.
+         ------------------------- -->
+    <section id="gallery" aria-labelledby="gallery-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="gallery-title">Photo Gallery</h2>
+          <div class="section-sub">Moments we've captured together</div>
+        </div>
+
+        <div class="gallery-grid" id="galleryGrid" aria-live="polite">
+          <!-- Replace these sample images with your own. They are public CC0 placeholders. -->
+          <div class="gallery-item" data-idx="0">
+            <img src="1.jpeg" alt="Us together 1">
+          </div>
+          <div class="gallery-item" data-idx="1">
+            <img src="2.jpeg" alt="Us together 2">
+          </div>
+          <div class="gallery-item" data-idx="2">
+            <img src="3.jpeg" alt="Us together 3">
+          </div>
+          <div class="gallery-item" data-idx="3">
+            <img src="4.jpeg" alt="Us together 4">
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal for slideshow -->
+      <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Photo viewer">
+        <div class="modal-content">
+          <button id="modalClose" style="position:absolute; right:12px; top:12px; background:rgba(255,255,255,0.9); border:0; padding:6px 10px; border-radius:8px; cursor:pointer;">✕</button>
+          <img src="" alt="" id="modalImage" class="modal-img">
+          <div style="display:flex; justify-content:space-between; margin-top:10px;">
+            <button id="prevBtn" style="background:var(--glass); border:0; padding:8px 12px; border-radius:8px; cursor:pointer;">◀ Prev</button>
+            <button id="nextBtn" style="background:var(--glass); border:0; padding:8px 12px; border-radius:8px; cursor:pointer;">Next ▶</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- -------------------------
+         Love Letter
+         - The "handwritten" romantic paragraph.
+         ------------------------- -->
+    <section id="love-letter" aria-labelledby="love-letter-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="love-letter-title">A Love Letter</h2>
+          <div class="section-sub">Words from my heart to yours</div>
+        </div>
+
+        <div class="love-letter" role="article">
+          <p>My beloved,</p>
+          <p>Every sunrise I get to share with you feels like a new promise. You hold my heart with tenderness and courage; with you I laugh louder, love deeper, and feel endlessly grateful. You make the ordinary sparkle, and the hard days softer. Thank you for being my calm, my joy, my favorite hello and my hardest goodbye.</p>
+
+          <p class="from">Always yours,</p>
+          <p class="from" style="font-weight:700; margin-top:6px;">— Me</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- -------------------------
+         The Question
+         - Dramatic final ask plus two buttons that trigger celebration.
+         ------------------------- -->
+    <section id="the-question" aria-labelledby="the-question-title">
+      <div class="container">
+        <div class="question">
+          <h2 id="the-question-title">Will you be my Valentine?</h2>
+          <div class="btn-row">
+            <button class="btn" id="yesBtn">Yes ❤️</button>
+            <button class="btn secondary" id="ofcBtn">Of course 💕</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Celebration overlay - pops up when either answer is clicked -->
+  <div class="celebrate" id="celebrate" role="dialog" aria-modal="true" aria-label="Celebration">
+    <div class="celebrate-card">
+      <h3>Yes! You make every day feel like Valentine’s Day.</h3>
+      <p>Thank you for saying yes — here's to a lifetime of small moments and big love.</p>
+      <div style="margin-top:1rem;">
+        <button id="closeCelebrate" style="background:var(--deep-red); color:#fff; border:0; padding:10px 16px; border-radius:12px; cursor:pointer;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>Made with love 💖 — Customize me with your own photos & words.</div>
+  </footer>
+
+  <!-- -------------------------
+       JavaScript
+       - Handles: audio controls, floating hearts animation, gallery modal,
+         countdown, button interactions, confetti/hearts particle system,
+         and responsive tweaks.
+       ------------------------- -->
+  <script>
+    /* -------------------------
+       Utility & initialization
+       ------------------------- */
+
+    // DOM refs
+    const bgMusic = document.getElementById('bgMusic');
+    const playBtn = document.getElementById('playBtn');
+    const muteBtn = document.getElementById('muteBtn');
+    const countdownEl = document.getElementById('countdown');
+    const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
+    const modal = document.getElementById('modal');
+    const modalImage = document.getElementById('modalImage');
+    const modalClose = document.getElementById('modalClose');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const celebrate = document.getElementById('celebrate');
+    const closeCelebrate = document.getElementById('closeCelebrate');
+    const yesBtn = document.getElementById('yesBtn');
+    const ofcBtn = document.getElementById('ofcBtn');
+
+    // Gallery images array (from DOM)
+    const images = galleryItems.map(item => item.querySelector('img').src);
+    let currentIdx = 0;
+
+    /* -------------------------
+       Audio controls behavior
+       - Play / Pause and Mute toggles.
+       - Some browsers block autoplay; the user can start playback manually.
+       ------------------------- */
+    let isPlaying = false;
+    playBtn.addEventListener('click', () => {
+      if(!isPlaying){
+        bgMusic.play().catch(()=>{ /* autoplay blocked; user interaction required */ });
+        isPlaying = true;
+        playBtn.textContent = '⏸ Pause';
+        playBtn.setAttribute('aria-pressed', 'true');
+      } else {
+        bgMusic.pause();
+        isPlaying = false;
+        playBtn.textContent = '▶︎ Play';
+        playBtn.setAttribute('aria-pressed', 'false');
+      }
+    });
+
+    // Start muted by default (safer for UX); user can unmute.
+    bgMusic.muted = true;
+    muteBtn.addEventListener('click', () => {
+      bgMusic.muted = !bgMusic.muted;
+      muteBtn.textContent = bgMusic.muted ? '🔈 Mute' : '🔊 Unmute';
+      muteBtn.setAttribute('aria-pressed', String(!bgMusic.muted));
+    });
+
+    /* -------------------------
+       Countdown to next Valentine's Day
+       - Calculates next Feb 14 and updates every second.
+       ------------------------- */
+    function getNextValentine(){
+      const now = new Date();
+      let year = now.getFullYear();
+      // If today is past Feb 14 this year, pick next year.
+      const thisFeb14 = new Date(year, 1, 14, 0, 0, 0); // month is 0-indexed
+      if(now > thisFeb14) year++;
+      return new Date(year, 1, 14, 0, 0, 0);
+    }
+    const targetDate = getNextValentine();
+
+    function updateCountdown(){
+      const now = new Date();
+      const diff = targetDate - now;
+      if(diff <= 0){
+        countdownEl.textContent = "Happy Valentine's Day!";
+        return;
+      }
+      const days = Math.floor(diff / (1000*60*60*24));
+      const hours = Math.floor((diff / (1000*60*60)) % 24);
+      const minutes = Math.floor((diff / (1000*60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+      countdownEl.textContent = `Countdown to Valentine’s Day: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    /* -------------------------
+       Gallery modal behavior
+       - Click item to open modal and navigate with next/prev.
+       ------------------------- */
+    galleryItems.forEach((item, idx) => {
+      item.addEventListener('click', () => {
+        openModal(idx);
+      });
+    });
+
+    function openModal(idx){
+      currentIdx = idx;
+      modalImage.src = images[idx];
+      modalImage.alt = document.querySelectorAll('.gallery-item img')[idx].alt || 'Photo';
+      modal.classList.add('open');
+      // trap focus and accessibility improvements could be added
+    }
+    function closeModal(){
+      modal.classList.remove('open');
+    }
+    modalClose.addEventListener('click', closeModal);
+    prevBtn.addEventListener('click', ()=>{ currentIdx = (currentIdx-1+images.length)%images.length; modalImage.src = images[currentIdx]; });
+    nextBtn.addEventListener('click', ()=>{ currentIdx = (currentIdx+1)%images.length; modalImage.src = images[currentIdx]; });
+
+    // Close modal when clicking outside image
+    modal.addEventListener('click', (e)=>{
+      if(e.target === modal) closeModal();
+    });
+
+    /* -------------------------
+       Floating hearts animation
+       - We generate hearts at random positions and animate them upwards.
+       - Uses CSS transforms via JS loop for lifetime control.
+       ------------------------- */
+    const hero = document.getElementById('hero');
+    const colors = ['#ff6b8a','#ffc2c7','#ffd2c2','#ff9aa2','#f6d1d6'];
+
+    function createFloatingHeart(){
+      const el = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      el.setAttribute('viewBox','0 0 24 24');
+      el.setAttribute('class','floating-heart');
+      const size = Math.floor(Math.random()*28) + 20;
+      el.setAttribute('width', size);
+      el.setAttribute('height', size);
+      const x = Math.random()*100; // percentage
+      const top = 100 + Math.random()*10; // start slightly below
+      el.style.left = x + '%';
+      el.style.top = top + '%';
+      el.style.opacity = (0.6 + Math.random()*0.4).toString();
+      const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+      path.setAttribute('fill', colors[Math.floor(Math.random()*colors.length)]);
+      path.setAttribute('d','M12 21s-7.5-4.873-10-8.086C-0.646 8.873 3.22 3 8 5.5 10.666 6.978 12 9 12 9s1.333-2.022 4-3.5c4.78-2.5 8.646 3.373 6 7.414C19.5 16.127 12 21 12 21z');
+      el.appendChild(path);
+      hero.appendChild(el);
+
+      // Animate upward with random duration & horizontal wobble
+      const duration = 8000 + Math.random()*6000;
+      const translateX = (Math.random()*40 - 20); // px
+      el.animate([
+        { transform: `translateY(0px) translateX(0px) scale(0.9)`, opacity: 0 },
+        { transform: `translateY(-60vh) translateX(${translateX}px) scale(1)`, opacity: 1 },
+        { transform: `translateY(-120vh) translateX(${translateX*2}px) scale(0.8)`, opacity: 0 }
+      ], {
+        duration,
+        easing: 'linear'
+      });
+
+      // Remove after done
+      setTimeout(()=> el.remove(), duration + 100);
+    }
+
+    // Generate a heart every ~900ms
+    setInterval(createFloatingHeart, 900);
+
+    /* -------------------------
+       Confetti & Heart Burst Particle System on clicks
+       - Uses <canvas id="confetti"> to draw animated particles.
+       - Triggered when either answer button is clicked, and also when user clicks anywhere as an optional effect.
+       ------------------------- */
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    let W = canvas.width = window.innerWidth;
+    let H = canvas.height = window.innerHeight;
+    window.addEventListener('resize', ()=>{ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+
+    // Particle constructor
+    function Particle(x,y,color,shape){
+      this.x = x;
+      this.y = y;
+      this.vx = (Math.random()*6 - 3) * (shape === 'heart' ? 0.6 : 1);
+      this.vy = (Math.random()*-6 - 2);
+      this.size = 6 + Math.random()*8;
+      this.gravity = 0.12 + Math.random()*0.06;
+      this.color = color;
+      this.shape = shape; // 'rect' or 'heart' or 'circle'
+      this.life = 80 + Math.random()*40;
+      this.age = 0;
+      this.angle = Math.random()*Math.PI*2;
+      this.spin = (Math.random()*0.2 - 0.1);
+    }
+    Particle.prototype.update = function(){
+      this.vy += this.gravity;
+      this.x += this.vx;
+      this.y += this.vy;
+      this.angle += this.spin;
+      this.age++;
+    };
+    Particle.prototype.draw = function(ctx){
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.angle);
+      if(this.shape === 'heart'){
+        // draw small heart path
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        //-heart via bezier scaled by size
+        const s = this.size/8;
+        ctx.moveTo(0, -8*s);
+        ctx.bezierCurveTo(8*s, -20*s, 26*s, -10*s, 0, 8*s);
+        ctx.bezierCurveTo(-26*s, -10*s, -8*s, -20*s, 0, -8*s);
+        ctx.fill();
+      } else if(this.shape === 'circle'){
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(0,0,this.size/2,0,Math.PI*2);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = this.color;
+        ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+      }
+      ctx.restore();
+    };
+
+    let particles = [];
+    function burst(x,y){
+      const count = 42 + Math.floor(Math.random()*28);
+      const palette = ['#ff6b8a','#ffc2c7','#ffd2c2','#ff9aa2','#f6d1d6', '#D4AF37'];
+      for(let i=0;i<count;i++){
+        const color = palette[Math.floor(Math.random()*palette.length)];
+        const shape = (Math.random() > 0.6) ? 'heart' : (Math.random() > 0.5 ? 'circle' : 'rect');
+        particles.push(new Particle(x + (Math.random()*40-20), y + (Math.random()*40-20), color, shape));
+      }
+    }
+
+    function animateParticles(){
+      requestAnimationFrame(animateParticles);
+      ctx.clearRect(0,0,W,H);
+      for(let i = particles.length-1;i>=0;i--){
+        const p = particles[i];
+        p.update();
+        p.draw(ctx);
+        if(p.age > p.life || p.y > H+50) particles.splice(i,1);
+      }
+    }
+    animateParticles();
+
+    // Connect celebration to buttons
+    function showCelebration(){
+      // open the celebration overlay
+      celebrate.classList.add('open');
+      // play a gentle pop via WebAudio or small tone? We'll rely on particles and music.
+      // trigger burst at center
+      burst(window.innerWidth/2, window.innerHeight/2);
+      // also create extra floating hearts for a short while
+      for(let i=0;i<12;i++) setTimeout(createFloatingHeart, i*150);
+    }
+
+    yesBtn.addEventListener('click', ()=>{
+      showCelebration();
+      // optional: ensure music is playing
+      if(bgMusic.paused){ bgMusic.play().catch(()=>{}); isPlaying = true; playBtn.textContent = '⏸ Pause'; }
+    });
+    ofcBtn.addEventListener('click', ()=>{
+      showCelebration();
+      if(bgMusic.paused){ bgMusic.play().catch(()=>{}); isPlaying = true; playBtn.textContent = '⏸ Pause'; }
+    });
+
+    closeCelebrate.addEventListener('click', ()=> celebrate.classList.remove('open'));
+
+    // Extra: click anywhere in hero to have a small burst
+    hero.addEventListener('click', (e)=>{
+      const rect = hero.getBoundingClientRect();
+      const x = e.clientX;
+      const y = e.clientY;
+      burst(x,y);
+    });
+
+    /* -------------------------
+       Extra polish: small animation on initial load
+       ------------------------- */
+    window.addEventListener('load', ()=>{
+      // Gentle entrance for hero
+      const heroCard = document.querySelector('.hero-card');
+      heroCard.style.transform = 'translateY(12px)';
+      heroCard.style.opacity = 0;
+      setTimeout(()=>{ heroCard.style.transition = 'transform 700ms cubic-bezier(.2,.9,.2,1), opacity 700ms'; heroCard.style.transform = 'translateY(0)'; heroCard.style.opacity = 1; }, 120);
+
+      // small welcome floating hearts
+      for(let i=0;i<6;i++) setTimeout(createFloatingHeart, i*300);
+    });
+
+    /* -------------------------
+       Accessibility & keyboard shortcuts
+       ------------------------- */
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape'){
+        closeModal();
+        celebrate.classList.remove('open');
+      }
+      if(e.key === 'ArrowLeft') prevBtn.click();
+      if(e.key === 'ArrowRight') nextBtn.click();
+    });
+
+    /* -------------------------
+       Notes for customization:
+       - Replace gallery images' src with your personal photos.
+       - Replace the audio source with your chosen background track.
+       - Edit the love letter and story cards to personalize the content.
+       - For additional effects, you can integrate a library like tsParticles or canvas-confetti.
+       ------------------------- */
+  </script>
+</body>
+</html>
